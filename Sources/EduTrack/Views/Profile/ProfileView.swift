@@ -14,7 +14,7 @@ struct ProfileView: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text(dataStore.currentProfessor?.name ?? "Loading...")
-                                .font(.title3.weight(.semibold))
+                                .font(.headline)
                             Text(dataStore.currentProfessor?.email ?? "")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
