@@ -1,6 +1,4 @@
 import SwiftUI
-import UIKit
-
 struct AuthView: View {
     @EnvironmentObject var dataStore: DataStore
     
@@ -86,7 +84,7 @@ struct AuthView: View {
                     .disabled(isLoading)
                 }
                 .padding(24)
-                .background(Color(UIColor.secondarySystemGroupedBackground))
+                .background(Color(white: 0.98))
                 .cornerRadius(16)
                 .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
                 .padding(.horizontal)
@@ -94,7 +92,7 @@ struct AuthView: View {
                 Spacer()
                 Spacer()
             }
-            .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+            .background(Color(white: 0.95).edgesIgnoringSafeArea(.all))
             .animation(.easeInOut, value: isLogin)
         }
     }
