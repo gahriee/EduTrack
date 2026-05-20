@@ -13,7 +13,7 @@ struct AuthView: View {
     @State private var isLoading = false
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             VStack {
                 Spacer()
                 

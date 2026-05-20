@@ -10,7 +10,7 @@ struct CreateStudentSheet: View {
     @State private var email = ""
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Form {
                 Section(header: Text("Student Details")) {
                     TextField("First Name", text: $firstName)

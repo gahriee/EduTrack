@@ -8,7 +8,7 @@ struct AddClassSheet: View {
     @State private var subject = ""
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Form {
                 Section(header: Text("Class Details")) {
                     TextField("Class Name (e.g. Math 101)", text: $className)

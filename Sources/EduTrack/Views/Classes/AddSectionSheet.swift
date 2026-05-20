@@ -8,7 +8,7 @@ struct AddSectionSheet: View {
     @State private var sectionName = ""
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Form {
                 Section(header: Text("Section Details")) {
                     TextField("Section Name (e.g. Section A)", text: $sectionName)

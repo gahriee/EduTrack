@@ -24,7 +24,7 @@ struct AddStudentToSectionSheet: View {
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 if unassignedStudents.isEmpty {
                     Text("All students are already in this section.")

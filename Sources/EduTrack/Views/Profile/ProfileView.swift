@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var dataStore: DataStore
-    
+
     var body: some View {
         NavigationStack {
             List {
@@ -11,7 +11,7 @@ struct ProfileView: View {
                         Image(systemName: "person.circle.fill")
                             .font(.system(size: 60))
                             .foregroundColor(.accentColor)
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
                             Text(dataStore.currentProfessor?.name ?? "Loading...")
                                 .font(.title3.weight(.semibold))
@@ -22,7 +22,7 @@ struct ProfileView: View {
                     }
                     .padding(.vertical, 8)
                 }
-                
+
                 Section {
                     Button(action: {
                         do {

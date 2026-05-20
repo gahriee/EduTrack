@@ -11,7 +11,7 @@ struct DashboardView: View {
     ]
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             ZStack {
                 Color(white: 0.95)
                     .edgesIgnoringSafeArea(.all)
