@@ -29,6 +29,5 @@ let package = Package(
             name: "EduTrackTests",
             dependencies: ["EduTrack"]
         ),
-    ],
-    swiftLanguageModes: [.v6]
+    ]
 )
