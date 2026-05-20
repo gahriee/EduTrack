@@ -1,0 +1,50 @@
+name: EduTrack
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  generateSchemes: true
+
+packages:
+  FirebaseSDK:
+    url: https://github.com/firebase/firebase-ios-sdk.git
+    from: "10.0.0"
+
+targets:
+  EduTrack:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/EduTrack
+        excludes:
+          - "**/.gitkeep"
+    resources:
+      - path: Sources/EduTrack/GoogleService-Info.plist
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/EduTrack/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.EduTrack
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: false
+        CODE_SIGN_STYLE: Automatic
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
+    dependencies:
+      - package: FirebaseSDK
+        product: FirebaseAuth
+      - package: FirebaseSDK
+        product: FirebaseFirestore
+
+  EduTrackTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: EduTrack

@@ -43,8 +43,9 @@ EduTrack/
 ## 🚀 Getting Started
 
 ### Prerequisites
-1. **Xcode 15+** or **Swift Playgrounds**.
-2. A **Firebase Project** set up in the [Firebase Console](https://console.firebase.google.com/).
+1. **Xcode 15+**.
+2. **[XcodeGen](https://github.com/yonaskolb/XcodeGen)** — install via Homebrew: `brew install xcodegen`.
+3. A **Firebase Project** set up in the [Firebase Console](https://console.firebase.google.com/).
 
 ### Installation & Setup
 
@@ -61,9 +62,15 @@ EduTrack/
    - Deploy the provided `firestore.rules` to secure your database.
    - Download the `GoogleService-Info.plist` file and place it in the `Sources/EduTrack/` directory, replacing the placeholder file.
 
-3. **Build & Run:**
-   - Open the `Package.swift` file in Xcode.
-   - Wait for the Swift Package Manager to resolve the `firebase-ios-sdk` dependencies.
+3. **Generate the Xcode project:**
+   ```bash
+   xcodegen generate
+   ```
+   This reads `project.yml` and creates `EduTrack.xcodeproj`.
+
+4. **Build & Run:**
+   - Open `EduTrack.xcodeproj` in Xcode.
+   - Wait for SPM to resolve the `firebase-ios-sdk` dependencies.
    - Select your target simulator (e.g., iPhone 15 Pro) and hit **Run** (`Cmd + R`).
 
 ## 🛡 Security Rules
