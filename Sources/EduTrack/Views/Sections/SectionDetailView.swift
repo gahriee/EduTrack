@@ -97,7 +97,6 @@ struct SectionDetailView: View {
             }
         }
         .navigationTitle(section.name)
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {

@@ -15,7 +15,6 @@ struct AddSectionSheet: View {
                 }
             }
             .navigationTitle("New Section")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

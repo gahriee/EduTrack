@@ -56,8 +56,7 @@ struct AddStudentToSectionSheet: View {
                 }
             }
             .searchable(text: $searchText, prompt: "Search students")
-            .navigationTitle("Add Student")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Add Students")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {

@@ -16,7 +16,6 @@ struct AddClassSheet: View {
                 }
             }
             .navigationTitle("New Class")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

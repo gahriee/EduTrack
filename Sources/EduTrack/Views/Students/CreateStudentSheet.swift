@@ -20,7 +20,6 @@ struct CreateStudentSheet: View {
                 }
             }
             .navigationTitle("New Student")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
