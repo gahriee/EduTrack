@@ -3,7 +3,7 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject var dataStore: DataStore
     
-    var body: some Scene {
+    var body: some View {
         Group {
             // Depending on the authentication state from DataStore,
             // we route the user to either the Auth flow or the Main app flow.
