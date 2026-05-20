@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "EduTrack",
     platforms: [
-        .iOS(.v16)
+        .iOS(.v16),
+        .macOS(.v13)
     ],
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "10.0.0")
