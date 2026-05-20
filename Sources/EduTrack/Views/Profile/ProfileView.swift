@@ -4,7 +4,7 @@ struct ProfileView: View {
     @EnvironmentObject var dataStore: DataStore
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 Section {
                     HStack(spacing: 16) {

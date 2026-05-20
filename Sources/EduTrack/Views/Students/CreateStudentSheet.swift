@@ -17,8 +17,6 @@ struct CreateStudentSheet: View {
                     TextField("Last Name", text: $lastName)
                     TextField("Student Number / ID", text: $studentNumber)
                     TextField("Email", text: $email)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
                 }
             }
             .navigationTitle("New Student")

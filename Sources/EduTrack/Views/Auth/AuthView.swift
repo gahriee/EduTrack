@@ -44,7 +44,6 @@ struct AuthView: View {
                         }
                         
                         AuthTextField(title: "Email", text: $email)
-                            .keyboardType(.emailAddress)
                         
                         AuthTextField(title: "Password", text: $password, isSecure: true)
                         

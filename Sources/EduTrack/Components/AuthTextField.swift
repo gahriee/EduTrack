@@ -17,7 +17,6 @@ struct AuthTextField: View {
             } else {
                 TextField("", text: $text)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.none)
                     .disableAutocorrection(true)
             }
         }
