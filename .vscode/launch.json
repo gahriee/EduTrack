@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:EduTrack}",
+            "name": "Debug EduTrack",
+            "target": "EduTrack",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug EduTrack"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:EduTrack}",
+            "name": "Release EduTrack",
+            "target": "EduTrack",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release EduTrack"
+        }
+    ]
+}

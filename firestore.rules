@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(professorId) {
+      return isAuthenticated() && request.auth.uid == professorId;
+    }
+
+    // -------------------------------------------------------------------------
+    // Professors Collection
+    // -------------------------------------------------------------------------
+    match /professors/{professorId} {
+      // Professors can only read/write their own profile data
+      allow read, write: if isOwner(professorId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Classes Collection
+    // -------------------------------------------------------------------------
+    match /classes/{classId} {
+      // Allow creation if the user sets themselves as the professor
+      allow create: if isAuthenticated() && request.resource.data.professorId == request.auth.uid;
+      
+      // Allow read/update/delete only if the user is the professor of the class
+      allow read, update, delete: if isAuthenticated() && resource.data.professorId == request.auth.uid;
+    }
+
+    // -------------------------------------------------------------------------
+    // Sections Collection
+    // -------------------------------------------------------------------------
+    match /sections/{sectionId} {
+      // Sections require a lookup to the parent class to verify ownership.
+      // This ensures only the professor of the class can manage its sections.
+      function isClassOwner(classId) {
+        return get(/databases/$(database)/documents/classes/$(classId)).data.professorId == request.auth.uid;
+      }
+      
+      allow create: if isAuthenticated() && isClassOwner(request.resource.data.classId);
+      allow read, update, delete: if isAuthenticated() && isClassOwner(resource.data.classId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Students Collection
+    // -------------------------------------------------------------------------
+    // Assuming students are in a global pool managed by any authenticated professor
+    match /students/{studentId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------------------
+    // Attendance Records Collection
+    // -------------------------------------------------------------------------
+    match /attendance_records/{recordId} {
+      // Similar to sections, we need to verify the user owns the section the record belongs to.
+      function isSectionOwner(sectionId) {
+        let classId = get(/databases/$(database)/documents/sections/$(sectionId)).data.classId;
+        return get(/databases/$(database)/documents/classes/$(classId)).data.professorId == request.auth.uid;
+      }
+      
+      allow create: if isAuthenticated() && isSectionOwner(request.resource.data.sectionId);
+      allow read, update, delete: if isAuthenticated() && isSectionOwner(resource.data.sectionId);
+    }
+  }
+}
