@@ -1,6 +1,5 @@
 import SwiftUI
 import UniformTypeIdentifiers
-import UIKit
 
 struct StudentsLibraryView: View {
     @EnvironmentObject var dataStore: DataStore
@@ -23,7 +22,7 @@ struct StudentsLibraryView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(UIColor.systemGroupedBackground)
+                Color(white: 0.95)
                     .edgesIgnoringSafeArea(.all)
                 
                 if dataStore.students.isEmpty {

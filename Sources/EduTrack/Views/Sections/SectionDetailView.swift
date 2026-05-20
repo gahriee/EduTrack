@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct SectionDetailView: View {
     @EnvironmentObject var dataStore: DataStore
@@ -34,7 +33,7 @@ struct SectionDetailView: View {
                         .padding()
                 }
             }
-            .background(Color(UIColor.secondarySystemGroupedBackground))
+            .background(Color(white: 0.98))
             
             // Summary Strip
             let records = currentRecords()
@@ -51,7 +50,7 @@ struct SectionDetailView: View {
             }
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
-            .background(Color(UIColor.systemBackground))
+            .background(Color(white: 1.0))
             .shadow(color: .black.opacity(0.05), radius: 3, y: 3)
             .zIndex(1)
             

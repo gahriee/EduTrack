@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct DashboardView: View {
     @EnvironmentObject var dataStore: DataStore
@@ -14,7 +13,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(UIColor.systemGroupedBackground)
+                Color(white: 0.95)
                     .edgesIgnoringSafeArea(.all)
                 
                 if dataStore.classes.isEmpty {
@@ -87,7 +86,7 @@ struct ClassCard: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .background(Color(white: 0.98))
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }

@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct ClassDetailView: View {
     @EnvironmentObject var dataStore: DataStore
@@ -9,7 +8,7 @@ struct ClassDetailView: View {
     
     var body: some View {
         ZStack {
-            Color(UIColor.systemGroupedBackground)
+            Color(white: 0.95)
                 .edgesIgnoringSafeArea(.all)
             
             let classSections = dataStore.sections.filter { $0.classId == schoolClass.id }
