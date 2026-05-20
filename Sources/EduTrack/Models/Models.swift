@@ -21,9 +21,9 @@ struct SchoolClass: Identifiable, Codable, Hashable {
 }
 
 // -------------------------------------------------------------------------
-// Section
+// ClassSection
 // -------------------------------------------------------------------------
-struct Section: Identifiable, Codable, Hashable {
+struct ClassSection: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var name: String
     var classId: String

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SectionDetailView: View {
     @EnvironmentObject var dataStore: DataStore
-    let section: Section
+    let section: ClassSection
     
     @State private var selectedDate = Date()
     @State private var showingAddStudent = false

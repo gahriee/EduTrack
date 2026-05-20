@@ -4,7 +4,7 @@ struct AddStudentToSectionSheet: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var dataStore: DataStore
     
-    let section: Section
+    let section: ClassSection
     @State private var searchText = ""
     
     var unassignedStudents: [Student] {

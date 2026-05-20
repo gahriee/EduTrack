@@ -10,7 +10,7 @@ class DataStore: ObservableObject {
     @Published var currentProfessor: Professor?
     
     @Published var classes: [SchoolClass] = []
-    @Published var sections: [Section] = []
+    @Published var sections: [ClassSection] = []
     @Published var students: [Student] = []
     @Published var attendanceRecords: [AttendanceRecord] = []
     
@@ -94,7 +94,7 @@ class DataStore: ObservableObject {
         let sectionListener = db.collection("sections")
             .addSnapshotListener { [weak self] querySnapshot, error in
                 guard let documents = querySnapshot?.documents else { return }
-                self?.sections = documents.compactMap { try? $0.data(as: Section.self) }
+                self?.sections = documents.compactMap { try? $0.data(as: ClassSection.self) }
             }
         listeners.append(sectionListener)
         
@@ -151,7 +151,7 @@ class DataStore: ObservableObject {
     
     // MARK: - Section Operations
     func addSection(name: String, classId: String) {
-        let newSection = Section(name: name, classId: classId, studentIds: [])
+        let newSection = ClassSection(name: name, classId: classId, studentIds: [])
         do {
             let _ = try db.collection("sections").addDocument(from: newSection)
         } catch {
