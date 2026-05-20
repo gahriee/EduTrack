@@ -4,7 +4,12 @@ import FirebaseCore
 @main
 struct AttendanceApp: App {
     init() {
-        FirebaseApp.configure()
+        if let plistPath = Bundle.module.path(forResource: "GoogleService-Info", ofType: "plist"),
+           let options = FirebaseOptions(contentsOfFile: plistPath) {
+            FirebaseApp.configure(options: options)
+        } else {
+            print("⚠️ GoogleService-Info.plist not found. Firebase not configured.")
+        }
     }
     
     // Create the single source of truth for the app's state
