@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct AuthView: View {
     @EnvironmentObject var dataStore: DataStore

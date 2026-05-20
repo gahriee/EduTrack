@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ClassDetailView: View {
     @EnvironmentObject var dataStore: DataStore
