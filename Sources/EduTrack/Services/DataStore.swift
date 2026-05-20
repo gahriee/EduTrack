@@ -27,7 +27,9 @@ class DataStore: ObservableObject {
         if let handle = authStateListenerHandle {
             Auth.auth().removeStateDidChangeListener(handle)
         }
-        clearListeners()
+        for listener in listeners {
+            listener.remove()
+        }
     }
     
     // MARK: - Authentication
