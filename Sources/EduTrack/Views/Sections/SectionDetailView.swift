@@ -9,54 +9,68 @@ struct SectionDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Date Picker Header
-            HStack {
-                Button(action: { changeDate(by: -1) }) {
-                    Image(systemName: "chevron.left")
-                        .padding()
+            
+            // Header Section (Date Picker + Summary)
+            VStack(spacing: 16) {
+                // Date Picker Header
+                HStack {
+                    Button(action: { withAnimation(.easeInOut) { changeDate(by: -1) } }) {
+                        Image(systemName: "chevron.left.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.blue.opacity(0.8))
+                    }
+                    
+                    Spacer()
+                    
+                    DatePicker(
+                        "Select Date",
+                        selection: $selectedDate,
+                        displayedComponents: .date
+                    )
+                    .labelsHidden()
+                    .datePickerStyle(CompactDatePickerStyle())
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+                    
+                    Spacer()
+                    
+                    Button(action: { withAnimation(.easeInOut) { changeDate(by: 1) } }) {
+                        Image(systemName: "chevron.right.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.blue.opacity(0.8))
+                    }
                 }
+                .padding(.horizontal)
                 
-                Spacer()
+                // Summary Strip
+                let records = currentRecords()
+                let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
                 
-                DatePicker(
-                    "Select Date",
-                    selection: $selectedDate,
-                    displayedComponents: .date
-                )
-                .labelsHidden()
-                .datePickerStyle(CompactDatePickerStyle())
+                let presentCount = records.filter { $0.status == .present }.count
+                let absentCount = records.filter { $0.status == .absent }.count
+                let lateCount = records.filter { $0.status == .late }.count
+                let pendingCount = records.filter { $0.status == .pending }.count + (sectionStudents.count - records.count) // default pending
                 
-                Spacer()
-                
-                Button(action: { changeDate(by: 1) }) {
-                    Image(systemName: "chevron.right")
-                        .padding()
+                HStack(spacing: 12) {
+                    SummaryItem(title: "Present", count: presentCount, color: .green)
+                    SummaryItem(title: "Absent", count: absentCount, color: .red)
+                    SummaryItem(title: "Late", count: lateCount, color: .orange)
+                    SummaryItem(title: "Pending", count: pendingCount, color: .gray)
                 }
+                .padding(.horizontal)
             }
-            .background(Color(white: 0.98))
-            
-            // Summary Strip
-            let records = currentRecords()
-            let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
-            
-            let presentCount = records.filter { $0.status == .present }.count
-            let absentCount = records.filter { $0.status == .absent }.count
-            let lateCount = records.filter { $0.status == .late }.count
-            let pendingCount = records.filter { $0.status == .pending }.count + (sectionStudents.count - records.count) // default pending
-            
-            HStack(spacing: 20) {
-                SummaryItem(title: "Present", count: presentCount, color: .green)
-                SummaryItem(title: "Absent", count: absentCount, color: .red)
-                SummaryItem(title: "Late", count: lateCount, color: .orange)
-                SummaryItem(title: "Pending", count: pendingCount, color: .gray)
-            }
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity)
-            .background(Color(white: 1.0))
-            .shadow(color: .black.opacity(0.05), radius: 3, y: 3)
+            .padding(.top, 12)
+            .padding(.bottom, 20)
+            .background(Color(.systemBackground))
+            .shadow(color: .black.opacity(0.05), radius: 5, y: 4)
             .zIndex(1)
             
             // Student List
+            let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
+            
             if sectionStudents.isEmpty {
                 Spacer()
                 EmptyStateView(
@@ -66,38 +80,68 @@ struct SectionDetailView: View {
                 )
                 Spacer()
             } else {
-                List {
-                    ForEach(sectionStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text("\(student.firstName) \(student.lastName)")
-                                    .font(.headline)
-                                Text(student.safeStudentNumber)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            let status = statusFor(studentId: student.id ?? "")
-                            AttendanceStatusPicker(status: .init(get: { status }, set: { newStatus in
-                                if let sectionId = currentSection.id, let studentId = student.id {
-                                    dataStore.updateRecord(sectionId: sectionId, date: selectedDate, studentId: studentId, status: newStatus)
+                ScrollView {
+                    LazyVStack(spacing: 14) {
+                        ForEach(sectionStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
+                            HStack(spacing: 16) {
+                                // Avatar
+                                Circle()
+                                    .fill(LinearGradient(
+                                        gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.purple.opacity(0.6)]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ))
+                                    .frame(width: 46, height: 46)
+                                    .overlay(
+                                        Text(String(student.firstName.prefix(1) + student.lastName.prefix(1)).uppercased())
+                                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                                            .foregroundColor(.white)
+                                    )
+                                    .shadow(color: .black.opacity(0.1), radius: 3, x: 0, y: 2)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("\(student.firstName) \(student.lastName)")
+                                        .font(.system(.headline, design: .rounded))
+                                        .foregroundColor(.primary)
+                                    Text(student.safeStudentNumber)
+                                        .font(.system(.subheadline, design: .rounded))
+                                        .foregroundColor(.secondary)
                                 }
-                            })) { _ in }
-                        }
-                    }
-                    .onDelete { indexSet in
-                        let sortedStudents = sectionStudents.sorted(by: { $0.lastName < $1.lastName })
-                        for index in indexSet {
-                            if let studentId = sortedStudents[index].id, let sectionId = currentSection.id {
-                                dataStore.removeStudentFromSection(studentId: studentId, sectionId: sectionId)
+                                
+                                Spacer()
+                                
+                                let status = statusFor(studentId: student.id ?? "")
+                                AttendanceStatusPicker(status: .init(get: { status }, set: { newStatus in
+                                    if let sectionId = currentSection.id, let studentId = student.id {
+                                        // Slight haptic feedback or animation could be added here
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                            dataStore.updateRecord(sectionId: sectionId, date: selectedDate, studentId: studentId, status: newStatus)
+                                        }
+                                    }
+                                })) { _ in }
+                            }
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .cornerRadius(16)
+                            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    if let studentId = student.id, let sectionId = currentSection.id {
+                                        withAnimation {
+                                            dataStore.removeStudentFromSection(studentId: studentId, sectionId: sectionId)
+                                        }
+                                    }
+                                } label: {
+                                    Label("Remove from Section", systemImage: "trash")
+                                }
                             }
                         }
                     }
+                    .padding()
                 }
             }
         }
+        .background(Color(white: 0.96).edgesIgnoringSafeArea(.bottom))
         .navigationTitle(currentSection.name)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -114,6 +158,7 @@ struct SectionDetailView: View {
             AddStudentToSectionSheet(section: currentSection)
         }
     }
+    
     private var currentSection: ClassSection {
         dataStore.sections.first(where: { $0.id == section.id }) ?? section
     }
@@ -137,7 +182,6 @@ struct SectionDetailView: View {
         if let record = records.first(where: { $0.studentId == studentId }) {
             return record.status
         }
-        // Default to pending if unrecorded
         return .pending
     }
 }
@@ -148,13 +192,22 @@ struct SummaryItem: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 6) {
             Text("\(count)")
-                .font(.title2.weight(.bold))
+                .font(.system(.title2, design: .rounded).weight(.bold))
                 .foregroundColor(color)
             Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(.system(.caption2, design: .rounded).weight(.bold))
+                .foregroundColor(color.opacity(0.85))
+                .textCase(.uppercase)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(color.opacity(0.12))
+        .cornerRadius(14)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(color.opacity(0.25), lineWidth: 1)
+        )
     }
 }

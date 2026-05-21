@@ -18,17 +18,21 @@ struct AttendanceStatusPicker: View {
                 }
             }
         } label: {
-            HStack(spacing: 4) {
-                Text(status.rawValue)
-                    .font(.subheadline.weight(.semibold))
+            HStack(spacing: 6) {
+                Text(status.rawValue.uppercased())
+                    .font(.system(.caption, design: .rounded).weight(.bold))
                 Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2)
+                    .font(.system(size: 10, weight: .bold))
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(colorForStatus(status).opacity(0.15))
             .foregroundColor(colorForStatus(status))
-            .cornerRadius(8)
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(colorForStatus(status).opacity(0.3), lineWidth: 1)
+            )
         }
     }
     
