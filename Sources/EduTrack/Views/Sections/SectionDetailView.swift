@@ -72,7 +72,12 @@ struct SectionDetailView: View {
                 // Student List
                 let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
                 
-                if sectionStudents.isEmpty {
+                if !dataStore.initialFetchStudentsDone || !dataStore.initialFetchRecordsDone {
+                    Spacer()
+                    ProgressView("Loading Data...")
+                        .padding()
+                    Spacer()
+                } else if sectionStudents.isEmpty {
                     Spacer()
                     EmptyStateView(
                         iconName: "person.crop.circle.badge.plus",

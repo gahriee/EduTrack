@@ -36,7 +36,12 @@ struct StudentsLibraryView: View {
                     
                     Divider()
                     
-                    if dataStore.students.isEmpty {
+                    if !dataStore.initialFetchStudentsDone {
+                        Spacer()
+                        ProgressView("Loading Students...")
+                            .padding()
+                        Spacer()
+                    } else if dataStore.students.isEmpty {
                         Spacer()
                         EmptyStateView(
                             iconName: "person.2.slash",

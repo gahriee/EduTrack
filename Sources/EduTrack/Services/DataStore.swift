@@ -14,10 +14,15 @@ class DataStore: ObservableObject {
     @Published var students: [Student] = []
     @Published var attendanceRecords: [AttendanceRecord] = []
     
-    // MARK: - Global UI State
-    @Published var isLoading: Bool = false
+    // MARK: - Global Toast State
     @Published var showGlobalToast: Bool = false
     @Published var globalToastMessage: String = ""
+    
+    // MARK: - Initial Fetch State
+    @Published var initialFetchClassesDone: Bool = false
+    @Published var initialFetchSectionsDone: Bool = false
+    @Published var initialFetchStudentsDone: Bool = false
+    @Published var initialFetchRecordsDone: Bool = false
     
     // MARK: - Firestore & Auth References
     private let db = Firestore.firestore()
@@ -86,6 +91,11 @@ class DataStore: ObservableObject {
     private func setupFirestoreListeners(for uid: String) {
         clearListeners()
         
+        self.initialFetchClassesDone = false
+        self.initialFetchSectionsDone = false
+        self.initialFetchStudentsDone = false
+        self.initialFetchRecordsDone = false
+        
         // Listen to Classes
         let classListener = db.collection("classes").whereField("professorId", isEqualTo: uid)
             .addSnapshotListener { [weak self] querySnapshot, error in
@@ -102,6 +112,7 @@ class DataStore: ObservableObject {
                         return nil
                     }
                 }
+                self?.initialFetchClassesDone = true
             }
         listeners.append(classListener)
         
@@ -120,6 +131,7 @@ class DataStore: ObservableObject {
                         return nil
                     }
                 }
+                self?.initialFetchSectionsDone = true
             }
         listeners.append(sectionListener)
         
@@ -138,6 +150,7 @@ class DataStore: ObservableObject {
                         return nil
                     }
                 }
+                self?.initialFetchStudentsDone = true
             }
         listeners.append(studentListener)
         
@@ -156,6 +169,7 @@ class DataStore: ObservableObject {
                         return nil
                     }
                 }
+                self?.initialFetchRecordsDone = true
             }
         listeners.append(recordListener)
     }
@@ -188,122 +202,74 @@ class DataStore: ObservableObject {
     func addClass(name: String, subject: String) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let newClass = SchoolClass(name: name, subject: subject, professorId: uid)
-        self.isLoading = true
-        Task {
-            do {
-                let _ = try await db.collection("classes").addDocument(from: newClass)
-                self.showToast(message: "Class added")
-            } catch {
-                print("Error adding class: \(error)")
-            }
-            self.isLoading = false
+        do {
+            let _ = try db.collection("classes").addDocument(from: newClass)
+            showToast(message: "Class added")
+        } catch {
+            print("Error adding class: \(error)")
         }
     }
     
     func deleteClass(id: String) {
-        self.isLoading = true
-        Task {
-            do {
-                // Cascade delete: first find and delete all sections in this class
-                let sectionsToDelete = self.sections.filter { $0.classId == id }
-                for section in sectionsToDelete {
-                    if let sectionId = section.id {
-                        let recordsToDelete = self.attendanceRecords.filter { $0.sectionId == sectionId }
-                        for record in recordsToDelete {
-                            if let recordId = record.id { try? await self.db.collection("attendance_records").document(recordId).delete() }
-                        }
-                        try? await self.db.collection("sections").document(sectionId).delete()
-                    }
-                }
-                
-                // Delete the class itself
-                try await self.db.collection("classes").document(id).delete()
-                self.showToast(message: "Class deleted")
-            } catch {
-                print("Error deleting class: \(error)")
+        // Cascade delete: first find and delete all sections in this class
+        let sectionsToDelete = sections.filter { $0.classId == id }
+        for section in sectionsToDelete {
+            if let sectionId = section.id {
+                deleteSection(id: sectionId)
             }
-            self.isLoading = false
         }
+        
+        // Delete the class itself
+        db.collection("classes").document(id).delete()
+        showToast(message: "Class deleted")
     }
     
     // MARK: - Section Operations
     func addSection(name: String, classId: String) {
         let newSection = ClassSection(name: name, classId: classId, studentIds: [])
-        self.isLoading = true
-        Task {
-            do {
-                let _ = try await db.collection("sections").addDocument(from: newSection)
-                self.showToast(message: "Section added")
-            } catch {
-                print("Error adding section: \(error)")
-            }
-            self.isLoading = false
+        do {
+            let _ = try db.collection("sections").addDocument(from: newSection)
+            showToast(message: "Section added")
+        } catch {
+            print("Error adding section: \(error)")
         }
     }
     
     func deleteSection(id: String) {
-        self.isLoading = true
-        Task {
-            do {
-                // Cascade delete attendance records for this section
-                let recordsToDelete = self.attendanceRecords.filter { $0.sectionId == id }
-                for record in recordsToDelete {
-                    if let recordId = record.id {
-                        try? await self.db.collection("attendance_records").document(recordId).delete()
-                    }
-                }
-                // Delete the section
-                try await self.db.collection("sections").document(id).delete()
-                self.showToast(message: "Section deleted")
-            } catch {
-                print("Error deleting section: \(error)")
+        // Cascade delete attendance records for this section
+        let recordsToDelete = attendanceRecords.filter { $0.sectionId == id }
+        for record in recordsToDelete {
+            if let recordId = record.id {
+                db.collection("attendance_records").document(recordId).delete()
             }
-            self.isLoading = false
         }
+        // Delete the section
+        db.collection("sections").document(id).delete()
+        showToast(message: "Section deleted")
     }
     
     // MARK: - Student Operations
     func createStudent(firstName: String, lastName: String, studentNumber: String, email: String) {
         let newStudent = Student(firstName: firstName, lastName: lastName, studentNumber: studentNumber, email: email)
-        self.isLoading = true
-        Task {
-            do {
-                let _ = try await db.collection("students").addDocument(from: newStudent)
-                self.showToast(message: "Student created")
-            } catch {
-                print("Error creating student: \(error)")
-            }
-            self.isLoading = false
+        do {
+            let _ = try db.collection("students").addDocument(from: newStudent)
+            showToast(message: "Student created")
+        } catch {
+            print("Error creating student: \(error)")
         }
     }
     
     func deleteStudent(id: String) {
-        self.isLoading = true
-        Task {
-            do {
-                // Remove student from all sections
-                for var section in self.sections where section.safeStudentIds.contains(id) {
-                    if let sectionId = section.id {
-                        var ids = section.safeStudentIds
-                        ids.removeAll { $0 == id }
-                        section.studentIds = ids
-                        try? await self.db.collection("sections").document(sectionId).setData(from: section)
-                        
-                        let recordsToDelete = self.attendanceRecords.filter { $0.sectionId == sectionId && $0.studentId == id }
-                        for record in recordsToDelete {
-                            if let recordId = record.id { try? await self.db.collection("attendance_records").document(recordId).delete() }
-                        }
-                    }
-                }
-                
-                // Delete student document
-                try await self.db.collection("students").document(id).delete()
-                self.showToast(message: "Student deleted")
-            } catch {
-                print("Error deleting student: \(error)")
+        // Remove student from all sections
+        for section in sections where section.safeStudentIds.contains(id) {
+            if let sectionId = section.id {
+                removeStudentFromSection(studentId: id, sectionId: sectionId)
             }
-            self.isLoading = false
         }
+        
+        // Delete student document
+        db.collection("students").document(id).delete()
+        showToast(message: "Student deleted")
     }
     
     func addStudentToSection(studentId: String, sectionId: String) {
@@ -312,15 +278,11 @@ class DataStore: ObservableObject {
         if !ids.contains(studentId) {
             ids.append(studentId)
             section.studentIds = ids
-            self.isLoading = true
-            Task {
-                do {
-                    try await self.db.collection("sections").document(sectionId).setData(from: section)
-                    self.showToast(message: "Student added to section")
-                } catch {
-                    print("Error adding student to section: \(error)")
-                }
-                self.isLoading = false
+            do {
+                try db.collection("sections").document(sectionId).setData(from: section)
+                showToast(message: "Student added to section")
+            } catch {
+                print("Error adding student to section: \(error)")
             }
         }
     }
@@ -331,23 +293,19 @@ class DataStore: ObservableObject {
         ids.removeAll { $0 == studentId }
         section.studentIds = ids
         
-        self.isLoading = true
-        Task {
-            do {
-                try await self.db.collection("sections").document(sectionId).setData(from: section)
-                
-                // Cascade delete attendance records for this student in this section
-                let recordsToDelete = self.attendanceRecords.filter { $0.sectionId == sectionId && $0.studentId == studentId }
-                for record in recordsToDelete {
-                    if let recordId = record.id {
-                        try? await self.db.collection("attendance_records").document(recordId).delete()
-                    }
+        do {
+            try db.collection("sections").document(sectionId).setData(from: section)
+            
+            // Cascade delete attendance records for this student in this section
+            let recordsToDelete = attendanceRecords.filter { $0.sectionId == sectionId && $0.studentId == studentId }
+            for record in recordsToDelete {
+                if let recordId = record.id {
+                    db.collection("attendance_records").document(recordId).delete()
                 }
-                self.showToast(message: "Student removed from section")
-            } catch {
-                print("Error removing student from section: \(error)")
             }
-            self.isLoading = false
+            showToast(message: "Student removed from section")
+        } catch {
+            print("Error removing student from section: \(error)")
         }
     }
     
@@ -361,27 +319,21 @@ class DataStore: ObservableObject {
             calendar.isDate($0.date, inSameDayAs: date)
         }
         
-        self.isLoading = true
-        Task {
-            if let existing = existingRecord, let recordId = existing.id {
-                do {
-                    try await self.db.collection("attendance_records").document(recordId).updateData([
-                        "status": status.rawValue
-                    ])
-                    self.showToast(message: "Status updated to \(status.rawValue)")
-                } catch {
-                    print("Error updating attendance record: \(error)")
-                }
-            } else {
-                let newRecord = AttendanceRecord(sectionId: sectionId, studentId: studentId, date: date, status: status)
-                do {
-                    let _ = try await self.db.collection("attendance_records").addDocument(from: newRecord)
-                    self.showToast(message: "Status updated to \(status.rawValue)")
-                } catch {
-                    print("Error creating attendance record: \(error)")
-                }
+        if let existing = existingRecord, let recordId = existing.id {
+            // Update existing
+            db.collection("attendance_records").document(recordId).updateData([
+                "status": status.rawValue
+            ])
+            showToast(message: "Status updated to \(status.rawValue)")
+        } else {
+            // Create new
+            let newRecord = AttendanceRecord(sectionId: sectionId, studentId: studentId, date: date, status: status)
+            do {
+                let _ = try db.collection("attendance_records").addDocument(from: newRecord)
+                showToast(message: "Status updated to \(status.rawValue)")
+            } catch {
+                print("Error creating attendance record: \(error)")
             }
-            self.isLoading = false
         }
     }
     

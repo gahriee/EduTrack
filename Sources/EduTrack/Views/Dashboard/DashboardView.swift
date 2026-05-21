@@ -27,7 +27,12 @@ struct DashboardView: View {
                     
                     Divider()
                     
-                    if dataStore.classes.isEmpty {
+                    if !dataStore.initialFetchClassesDone {
+                        Spacer()
+                        ProgressView("Loading Classes...")
+                            .padding()
+                        Spacer()
+                    } else if dataStore.classes.isEmpty {
                         Spacer()
                         EmptyStateView(
                             iconName: "book.closed",

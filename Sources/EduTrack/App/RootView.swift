@@ -13,28 +13,6 @@ struct RootView: View {
                 }
             }
             
-            // Global Loading Overlay
-            if dataStore.isLoading {
-                ZStack {
-                    Color.black.opacity(0.4)
-                        .edgesIgnoringSafeArea(.all)
-                    
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        
-                        Text("Please wait...")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                    }
-                    .padding(30)
-                    .background(Color(white: 0.2).opacity(0.8))
-                    .cornerRadius(16)
-                }
-                .zIndex(1000) // Ensure it blocks interaction with underlying views
-            }
-            
             // Global Toast Overlay
             if dataStore.showGlobalToast {
                 VStack {
