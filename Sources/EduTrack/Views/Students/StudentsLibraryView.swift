@@ -25,42 +25,56 @@ struct StudentsLibraryView: View {
                 Color(white: 0.95)
                     .edgesIgnoringSafeArea(.all)
                 
-                if dataStore.students.isEmpty {
-                    EmptyStateView(
-                        iconName: "person.2.slash",
-                        title: "No Students Yet",
-                        message: "Add students to your global library first."
-                    )
-                } else {
-                    List {
-                        ForEach(filteredStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
-                            HStack {
-                                Image(systemName: "person.circle.fill")
-                                    .font(.title2)
-                                    .foregroundColor(.gray)
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("\(student.firstName) \(student.lastName)")
-                                        .font(.headline)
-                                    Text(student.safeStudentNumber)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Add and import students into the global roster.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(white: 0.98))
+                    
+                    Divider()
+                    
+                    if dataStore.students.isEmpty {
+                        Spacer()
+                        EmptyStateView(
+                            iconName: "person.2.slash",
+                            title: "No Students Yet",
+                            message: "Add students to your global library first."
+                        )
+                        Spacer()
+                    } else {
+                        List {
+                            ForEach(filteredStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
+                                HStack {
+                                    Image(systemName: "person.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.gray)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("\(student.firstName) \(student.lastName)")
+                                            .font(.headline)
+                                        Text(student.safeStudentNumber)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Spacer()
                                 }
-                                
-                                Spacer()
+                                .padding(.vertical, 4)
                             }
-                            .padding(.vertical, 4)
-                        }
-                        .onDelete { indexSet in
-                            let sortedStudents = filteredStudents.sorted(by: { $0.lastName < $1.lastName })
-                            for index in indexSet {
-                                if let id = sortedStudents[index].id {
-                                    dataStore.deleteStudent(id: id)
+                            .onDelete { indexSet in
+                                let sortedStudents = filteredStudents.sorted(by: { $0.lastName < $1.lastName })
+                                for index in indexSet {
+                                    if let id = sortedStudents[index].id {
+                                        dataStore.deleteStudent(id: id)
+                                    }
                                 }
                             }
                         }
+                        .searchable(text: $searchText, prompt: "Search students")
                     }
-                    .searchable(text: $searchText, prompt: "Search students")
                 }
                 
                 // FAB

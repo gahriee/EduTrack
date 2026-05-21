@@ -16,32 +16,46 @@ struct DashboardView: View {
                 Color(white: 0.95)
                     .edgesIgnoringSafeArea(.all)
                 
-                if dataStore.classes.isEmpty {
-                    EmptyStateView(
-                        iconName: "book.closed",
-                        title: "No Classes Yet",
-                        message: "Tap the + button to create your first class."
-                    )
-                } else {
-                    ScrollView {
-                        LazyVGrid(columns: columns, spacing: 16) {
-                            ForEach(dataStore.classes) { schoolClass in
-                                // NavigationLink to ClassDetailView (Phase 5)
-                                NavigationLink(destination: ClassDetailView(schoolClass: schoolClass)) {
-                                    ClassCard(schoolClass: schoolClass)
-                                }
-                                .contextMenu {
-                                    Button(role: .destructive) {
-                                        if let id = schoolClass.id {
-                                            dataStore.deleteClass(id: id)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Manage classes, sections, and take attendance.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(white: 0.98))
+                    
+                    Divider()
+                    
+                    if dataStore.classes.isEmpty {
+                        Spacer()
+                        EmptyStateView(
+                            iconName: "book.closed",
+                            title: "No Classes Yet",
+                            message: "Tap the + button to create your first class."
+                        )
+                        Spacer()
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: columns, spacing: 16) {
+                                ForEach(dataStore.classes) { schoolClass in
+                                    // NavigationLink to ClassDetailView (Phase 5)
+                                    NavigationLink(destination: ClassDetailView(schoolClass: schoolClass)) {
+                                        ClassCard(schoolClass: schoolClass)
+                                    }
+                                    .contextMenu {
+                                        Button(role: .destructive) {
+                                            if let id = schoolClass.id {
+                                                dataStore.deleteClass(id: id)
+                                            }
+                                        } label: {
+                                            Label("Delete Class", systemImage: "trash")
                                         }
-                                    } label: {
-                                        Label("Delete Class", systemImage: "trash")
                                     }
                                 }
                             }
+                            .padding()
                         }
-                        .padding()
                     }
                 }
                 
