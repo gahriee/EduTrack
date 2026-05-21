@@ -57,6 +57,7 @@ struct Student: Identifiable, Codable, Hashable {
 // AttendanceStatus
 // -------------------------------------------------------------------------
 enum AttendanceStatus: String, CaseIterable, Codable, Hashable {
+    case pending = "Pending"
     case present = "Present"
     case absent = "Absent"
     case late = "Late"

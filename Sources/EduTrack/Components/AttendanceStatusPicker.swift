@@ -34,6 +34,7 @@ struct AttendanceStatusPicker: View {
     
     private func colorForStatus(_ status: AttendanceStatus) -> Color {
         switch status {
+        case .pending: return .gray
         case .present: return .green
         case .absent: return .red
         case .late: return .orange

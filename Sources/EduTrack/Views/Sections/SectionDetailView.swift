@@ -39,14 +39,16 @@ struct SectionDetailView: View {
             let records = currentRecords()
             let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
             
-            let presentCount = records.filter { $0.status == .present }.count + (sectionStudents.count - records.count) // default present
+            let presentCount = records.filter { $0.status == .present }.count
             let absentCount = records.filter { $0.status == .absent }.count
             let lateCount = records.filter { $0.status == .late }.count
+            let pendingCount = records.filter { $0.status == .pending }.count + (sectionStudents.count - records.count) // default pending
             
             HStack(spacing: 20) {
                 SummaryItem(title: "Present", count: presentCount, color: .green)
                 SummaryItem(title: "Absent", count: absentCount, color: .red)
                 SummaryItem(title: "Late", count: lateCount, color: .orange)
+                SummaryItem(title: "Pending", count: pendingCount, color: .gray)
             }
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity)
@@ -135,8 +137,8 @@ struct SectionDetailView: View {
         if let record = records.first(where: { $0.studentId == studentId }) {
             return record.status
         }
-        // Default to present if unrecorded
-        return .present
+        // Default to pending if unrecorded
+        return .pending
     }
 }
 
