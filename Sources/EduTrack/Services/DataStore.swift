@@ -19,6 +19,7 @@ class DataStore: ObservableObject {
     @Published var globalToastMessage: String = ""
     
     // MARK: - Initial Fetch State
+    @Published var isInitializing: Bool = true
     @Published var initialFetchClassesDone: Bool = false
     @Published var initialFetchSectionsDone: Bool = false
     @Published var initialFetchStudentsDone: Bool = false
@@ -57,6 +58,11 @@ class DataStore: ObservableObject {
                     self.clearLocalData()
                     self.clearListeners()
                 }
+                
+                // Once we have evaluated the auth state, the app is no longer initializing.
+                // We add a slight delay to ensure smooth transition.
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+                self.isInitializing = false
             }
         }
     }

@@ -37,10 +37,9 @@ struct StudentsLibraryView: View {
                     Divider()
                     
                     if !dataStore.initialFetchStudentsDone {
-                        Spacer()
                         ProgressView("Loading Students...")
                             .padding()
-                        Spacer()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else if dataStore.students.isEmpty {
                         Spacer()
                         EmptyStateView(

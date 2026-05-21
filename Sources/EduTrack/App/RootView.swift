@@ -6,12 +6,19 @@ struct RootView: View {
     var body: some View {
         ZStack {
             Group {
-                if dataStore.isAuthenticated {
+                if dataStore.isInitializing {
+                    SplashView()
+                        .transition(.opacity)
+                } else if dataStore.isAuthenticated {
                     MainTabView()
+                        .transition(.opacity)
                 } else {
                     AuthView()
+                        .transition(.opacity)
                 }
             }
+            .animation(.easeInOut, value: dataStore.isInitializing)
+            .animation(.easeInOut, value: dataStore.isAuthenticated)
             
             // Global Toast Overlay
             if dataStore.showGlobalToast {
@@ -39,4 +46,29 @@ struct RootView: View {
 #Preview {
     RootView()
         .environmentObject(DataStore())
+}
+
+struct SplashView: View {
+    var body: some View {
+        ZStack {
+            Color.accentColor.edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 24) {
+                Image(systemName: "graduationcap.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .foregroundColor(.white)
+                
+                Text("EduTrack")
+                    .font(.system(size: 42, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+                    .padding(.top, 30)
+            }
+        }
+    }
 }

@@ -28,10 +28,9 @@ struct DashboardView: View {
                     Divider()
                     
                     if !dataStore.initialFetchClassesDone {
-                        Spacer()
                         ProgressView("Loading Classes...")
                             .padding()
-                        Spacer()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else if dataStore.classes.isEmpty {
                         Spacer()
                         EmptyStateView(

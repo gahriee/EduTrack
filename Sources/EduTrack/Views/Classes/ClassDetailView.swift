@@ -25,10 +25,9 @@ struct ClassDetailView: View {
                 let classSections = dataStore.sections.filter { $0.classId == schoolClass.id }
                 
                 if !dataStore.initialFetchSectionsDone {
-                    Spacer()
                     ProgressView("Loading Sections...")
                         .padding()
-                    Spacer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if classSections.isEmpty {
                     Spacer()
                     EmptyStateView(

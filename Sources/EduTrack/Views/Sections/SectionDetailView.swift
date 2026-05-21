@@ -73,10 +73,9 @@ struct SectionDetailView: View {
                 let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
                 
                 if !dataStore.initialFetchStudentsDone || !dataStore.initialFetchRecordsDone {
-                    Spacer()
                     ProgressView("Loading Data...")
                         .padding()
-                    Spacer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if sectionStudents.isEmpty {
                     Spacer()
                     EmptyStateView(
