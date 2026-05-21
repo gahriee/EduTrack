@@ -42,7 +42,8 @@ service cloud.firestore {
       }
       
       allow create: if isAuthenticated() && isClassOwner(request.resource.data.classId);
-      allow read, update, delete: if isAuthenticated() && isClassOwner(resource.data.classId);
+      allow read: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && isClassOwner(resource.data.classId);
     }
 
     // -------------------------------------------------------------------------
@@ -64,7 +65,8 @@ service cloud.firestore {
       }
       
       allow create: if isAuthenticated() && isSectionOwner(request.resource.data.sectionId);
-      allow read, update, delete: if isAuthenticated() && isSectionOwner(resource.data.sectionId);
+      allow read: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && isSectionOwner(resource.data.sectionId);
     }
   }
 }
