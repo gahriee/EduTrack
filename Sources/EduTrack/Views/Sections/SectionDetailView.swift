@@ -6,8 +6,6 @@ struct SectionDetailView: View {
     
     @State private var selectedDate = Date()
     @State private var showingAddStudent = false
-    @State private var showToast = false
-    @State private var toastMessage = ""
     
     var body: some View {
         ZStack {
@@ -109,7 +107,6 @@ struct SectionDetailView: View {
                                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                                 dataStore.updateRecord(sectionId: sectionId, date: selectedDate, studentId: studentId, status: newStatus)
                                             }
-                                            showToastMessage("Status updated to \(newStatus.rawValue)")
                                         }
                                     })) { _ in }
                                 }
@@ -136,22 +133,6 @@ struct SectionDetailView: View {
             }
             .background(Color(white: 0.96).edgesIgnoringSafeArea(.bottom))
             
-            // Toast Overlay
-            if showToast {
-                VStack {
-                    Spacer()
-                    Text(toastMessage)
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(Color.black.opacity(0.75))
-                        .cornerRadius(20)
-                        .padding(.bottom, 30)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .zIndex(2)
-                }
-            }
         }
         .navigationTitle(currentSection.name)
         .toolbar {
@@ -167,18 +148,6 @@ struct SectionDetailView: View {
         }
         .sheet(isPresented: $showingAddStudent) {
             AddStudentToSectionSheet(section: currentSection)
-        }
-    }
-    
-    private func showToastMessage(_ message: String) {
-        withAnimation {
-            toastMessage = message
-            showToast = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation {
-                showToast = false
-            }
         }
     }
     

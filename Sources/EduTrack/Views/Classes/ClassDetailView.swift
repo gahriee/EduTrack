@@ -45,6 +45,15 @@ struct ClassDetailView: View {
                                 }
                                 .padding(.vertical, 4)
                             }
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    if let sectionId = section.id {
+                                        dataStore.deleteSection(id: sectionId)
+                                    }
+                                } label: {
+                                    Label("Delete Section", systemImage: "trash")
+                                }
+                            }
                         }
                         .onDelete { indexSet in
                             for index in indexSet {

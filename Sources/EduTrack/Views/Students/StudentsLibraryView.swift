@@ -63,6 +63,15 @@ struct StudentsLibraryView: View {
                                     Spacer()
                                 }
                                 .padding(.vertical, 4)
+                                .contextMenu {
+                                    Button(role: .destructive) {
+                                        if let studentId = student.id {
+                                            dataStore.deleteStudent(id: studentId)
+                                        }
+                                    } label: {
+                                        Label("Delete Student", systemImage: "trash")
+                                    }
+                                }
                             }
                             .onDelete { indexSet in
                                 let sortedStudents = filteredStudents.sorted(by: { $0.lastName < $1.lastName })

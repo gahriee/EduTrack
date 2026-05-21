@@ -14,6 +14,10 @@ class DataStore: ObservableObject {
     @Published var students: [Student] = []
     @Published var attendanceRecords: [AttendanceRecord] = []
     
+    // MARK: - Global Toast State
+    @Published var showGlobalToast: Bool = false
+    @Published var globalToastMessage: String = ""
+    
     // MARK: - Firestore & Auth References
     private let db = Firestore.firestore()
     private var authStateListenerHandle: AuthStateDidChangeListenerHandle?
@@ -167,12 +171,25 @@ class DataStore: ObservableObject {
         attendanceRecords = []
     }
     
+    func showToast(message: String) {
+        withAnimation {
+            self.globalToastMessage = message
+            self.showGlobalToast = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                self.showGlobalToast = false
+            }
+        }
+    }
+    
     // MARK: - Class Operations
     func addClass(name: String, subject: String) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let newClass = SchoolClass(name: name, subject: subject, professorId: uid)
         do {
             let _ = try db.collection("classes").addDocument(from: newClass)
+            showToast(message: "Class added")
         } catch {
             print("Error adding class: \(error)")
         }
@@ -189,6 +206,7 @@ class DataStore: ObservableObject {
         
         // Delete the class itself
         db.collection("classes").document(id).delete()
+        showToast(message: "Class deleted")
     }
     
     // MARK: - Section Operations
@@ -196,6 +214,7 @@ class DataStore: ObservableObject {
         let newSection = ClassSection(name: name, classId: classId, studentIds: [])
         do {
             let _ = try db.collection("sections").addDocument(from: newSection)
+            showToast(message: "Section added")
         } catch {
             print("Error adding section: \(error)")
         }
@@ -211,6 +230,7 @@ class DataStore: ObservableObject {
         }
         // Delete the section
         db.collection("sections").document(id).delete()
+        showToast(message: "Section deleted")
     }
     
     // MARK: - Student Operations
@@ -218,6 +238,7 @@ class DataStore: ObservableObject {
         let newStudent = Student(firstName: firstName, lastName: lastName, studentNumber: studentNumber, email: email)
         do {
             let _ = try db.collection("students").addDocument(from: newStudent)
+            showToast(message: "Student created")
         } catch {
             print("Error creating student: \(error)")
         }
@@ -233,6 +254,7 @@ class DataStore: ObservableObject {
         
         // Delete student document
         db.collection("students").document(id).delete()
+        showToast(message: "Student deleted")
     }
     
     func addStudentToSection(studentId: String, sectionId: String) {
@@ -243,6 +265,7 @@ class DataStore: ObservableObject {
             section.studentIds = ids
             do {
                 try db.collection("sections").document(sectionId).setData(from: section)
+                showToast(message: "Student added to section")
             } catch {
                 print("Error adding student to section: \(error)")
             }
@@ -265,6 +288,7 @@ class DataStore: ObservableObject {
                     db.collection("attendance_records").document(recordId).delete()
                 }
             }
+            showToast(message: "Student removed from section")
         } catch {
             print("Error removing student from section: \(error)")
         }
@@ -285,11 +309,13 @@ class DataStore: ObservableObject {
             db.collection("attendance_records").document(recordId).updateData([
                 "status": status.rawValue
             ])
+            showToast(message: "Status updated to \(status.rawValue)")
         } else {
             // Create new
             let newRecord = AttendanceRecord(sectionId: sectionId, studentId: studentId, date: date, status: status)
             do {
                 let _ = try db.collection("attendance_records").addDocument(from: newRecord)
+                showToast(message: "Status updated to \(status.rawValue)")
             } catch {
                 print("Error creating attendance record: \(error)")
             }
