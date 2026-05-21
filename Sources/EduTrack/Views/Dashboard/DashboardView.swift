@@ -96,6 +96,7 @@ struct ClassCard: View {
             Text(schoolClass.subject)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding()
