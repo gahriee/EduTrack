@@ -26,7 +26,7 @@ struct ClassDetailView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(section.name)
                                     .font(.headline)
-                                Text("\(section.studentIds.count) Students")
+                                Text("\(section.safeStudentIds.count) Students")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }

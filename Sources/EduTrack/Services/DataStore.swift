@@ -84,33 +84,73 @@ class DataStore: ObservableObject {
         // Listen to Classes
         let classListener = db.collection("classes").whereField("professorId", isEqualTo: uid)
             .addSnapshotListener { [weak self] querySnapshot, error in
+                if let error = error {
+                    print("Error listening to classes: \(error.localizedDescription)")
+                    return
+                }
                 guard let documents = querySnapshot?.documents else { return }
-                self?.classes = documents.compactMap { try? $0.data(as: SchoolClass.self) }
+                self?.classes = documents.compactMap { doc in
+                    do {
+                        return try doc.data(as: SchoolClass.self)
+                    } catch {
+                        print("Error decoding class \(doc.documentID): \(error)")
+                        return nil
+                    }
+                }
             }
         listeners.append(classListener)
         
-        // Sections, Students, and Records would also be listened to in a real app,
-        // but often it's better to fetch them as needed or listen to specific queries
-        // to save reads. For this architecture, we will fetch/listen globally for simplicity.
-        
         let sectionListener = db.collection("sections")
             .addSnapshotListener { [weak self] querySnapshot, error in
+                if let error = error {
+                    print("Error listening to sections: \(error.localizedDescription)")
+                    return
+                }
                 guard let documents = querySnapshot?.documents else { return }
-                self?.sections = documents.compactMap { try? $0.data(as: ClassSection.self) }
+                self?.sections = documents.compactMap { doc in
+                    do {
+                        return try doc.data(as: ClassSection.self)
+                    } catch {
+                        print("Error decoding section \(doc.documentID): \(error)")
+                        return nil
+                    }
+                }
             }
         listeners.append(sectionListener)
         
         let studentListener = db.collection("students")
             .addSnapshotListener { [weak self] querySnapshot, error in
+                if let error = error {
+                    print("Error listening to students: \(error.localizedDescription)")
+                    return
+                }
                 guard let documents = querySnapshot?.documents else { return }
-                self?.students = documents.compactMap { try? $0.data(as: Student.self) }
+                self?.students = documents.compactMap { doc in
+                    do {
+                        return try doc.data(as: Student.self)
+                    } catch {
+                        print("Error decoding student \(doc.documentID): \(error)")
+                        return nil
+                    }
+                }
             }
         listeners.append(studentListener)
         
         let recordListener = db.collection("attendance_records")
             .addSnapshotListener { [weak self] querySnapshot, error in
+                if let error = error {
+                    print("Error listening to attendance records: \(error.localizedDescription)")
+                    return
+                }
                 guard let documents = querySnapshot?.documents else { return }
-                self?.attendanceRecords = documents.compactMap { try? $0.data(as: AttendanceRecord.self) }
+                self?.attendanceRecords = documents.compactMap { doc in
+                    do {
+                        return try doc.data(as: AttendanceRecord.self)
+                    } catch {
+                        print("Error decoding attendance record \(doc.documentID): \(error)")
+                        return nil
+                    }
+                }
             }
         listeners.append(recordListener)
     }
@@ -185,7 +225,7 @@ class DataStore: ObservableObject {
     
     func deleteStudent(id: String) {
         // Remove student from all sections
-        for section in sections where section.studentIds.contains(id) {
+        for section in sections where section.safeStudentIds.contains(id) {
             if let sectionId = section.id {
                 removeStudentFromSection(studentId: id, sectionId: sectionId)
             }
@@ -197,8 +237,10 @@ class DataStore: ObservableObject {
     
     func addStudentToSection(studentId: String, sectionId: String) {
         guard var section = sections.first(where: { $0.id == sectionId }) else { return }
-        if !section.studentIds.contains(studentId) {
-            section.studentIds.append(studentId)
+        var ids = section.safeStudentIds
+        if !ids.contains(studentId) {
+            ids.append(studentId)
+            section.studentIds = ids
             do {
                 try db.collection("sections").document(sectionId).setData(from: section)
             } catch {
@@ -209,7 +251,9 @@ class DataStore: ObservableObject {
     
     func removeStudentFromSection(studentId: String, sectionId: String) {
         guard var section = sections.first(where: { $0.id == sectionId }) else { return }
-        section.studentIds.removeAll { $0 == studentId }
+        var ids = section.safeStudentIds
+        ids.removeAll { $0 == studentId }
+        section.studentIds = ids
         
         do {
             try db.collection("sections").document(sectionId).setData(from: section)

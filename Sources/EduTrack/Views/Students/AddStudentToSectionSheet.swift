@@ -12,7 +12,7 @@ struct AddStudentToSectionSheet: View {
     }
     
     var unassignedStudents: [Student] {
-        dataStore.students.filter { !currentSection.studentIds.contains($0.id ?? "") }
+        dataStore.students.filter { !currentSection.safeStudentIds.contains($0.id ?? "") }
     }
     
     var filteredStudents: [Student] {
@@ -22,7 +22,7 @@ struct AddStudentToSectionSheet: View {
             return unassignedStudents.filter {
                 $0.firstName.localizedCaseInsensitiveContains(searchText) ||
                 $0.lastName.localizedCaseInsensitiveContains(searchText) ||
-                $0.studentNumber.localizedCaseInsensitiveContains(searchText)
+                $0.safeStudentNumber.localizedCaseInsensitiveContains(searchText)
             }
         }
     }
@@ -47,7 +47,7 @@ struct AddStudentToSectionSheet: View {
                                     Text("\(student.firstName) \(student.lastName)")
                                         .font(.headline)
                                         .foregroundColor(.primary)
-                                    Text(student.studentNumber)
+                                    Text(student.safeStudentNumber)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }

@@ -27,7 +27,11 @@ struct ClassSection: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var name: String
     var classId: String
-    var studentIds: [String]
+    var studentIds: [String]?
+    
+    var safeStudentIds: [String] {
+        studentIds ?? []
+    }
 }
 
 // -------------------------------------------------------------------------
@@ -37,8 +41,16 @@ struct Student: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var firstName: String
     var lastName: String
-    var studentNumber: String
-    var email: String
+    var studentNumber: String?
+    var email: String?
+    
+    var safeStudentNumber: String {
+        studentNumber ?? ""
+    }
+    
+    var safeEmail: String {
+        email ?? ""
+    }
 }
 
 // -------------------------------------------------------------------------

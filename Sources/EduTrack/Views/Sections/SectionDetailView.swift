@@ -37,7 +37,7 @@ struct SectionDetailView: View {
             
             // Summary Strip
             let records = currentRecords()
-            let sectionStudents = dataStore.students.filter { currentSection.studentIds.contains($0.id ?? "") }
+            let sectionStudents = dataStore.students.filter { currentSection.safeStudentIds.contains($0.id ?? "") }
             
             let presentCount = records.filter { $0.status == .present }.count + (sectionStudents.count - records.count) // default present
             let absentCount = records.filter { $0.status == .absent }.count
@@ -70,7 +70,7 @@ struct SectionDetailView: View {
                             VStack(alignment: .leading) {
                                 Text("\(student.firstName) \(student.lastName)")
                                     .font(.headline)
-                                Text(student.studentNumber)
+                                Text(student.safeStudentNumber)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }

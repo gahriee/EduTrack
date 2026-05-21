@@ -14,7 +14,7 @@ struct StudentsLibraryView: View {
             return dataStore.students.filter {
                 $0.firstName.localizedCaseInsensitiveContains(searchText) ||
                 $0.lastName.localizedCaseInsensitiveContains(searchText) ||
-                $0.studentNumber.localizedCaseInsensitiveContains(searchText)
+                $0.safeStudentNumber.localizedCaseInsensitiveContains(searchText)
             }
         }
     }
@@ -42,7 +42,7 @@ struct StudentsLibraryView: View {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("\(student.firstName) \(student.lastName)")
                                         .font(.headline)
-                                    Text(student.studentNumber)
+                                    Text(student.safeStudentNumber)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
