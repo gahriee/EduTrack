@@ -85,19 +85,9 @@ struct SectionDetailView: View {
                         ForEach(sectionStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
                             HStack(spacing: 16) {
                                 // Avatar
-                                Circle()
-                                    .fill(LinearGradient(
-                                        gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.purple.opacity(0.6)]),
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ))
-                                    .frame(width: 46, height: 46)
-                                    .overlay(
-                                        Text(String(student.firstName.prefix(1) + student.lastName.prefix(1)).uppercased())
-                                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                                            .foregroundColor(.white)
-                                    )
-                                    .shadow(color: .black.opacity(0.1), radius: 3, x: 0, y: 2)
+                                Image(systemName: "person.circle.fill")
+                                    .font(.system(size: 46))
+                                    .foregroundColor(.accentColor)
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("\(student.firstName) \(student.lastName)")

@@ -9,7 +9,7 @@ struct ProfileView: View {
                 Section {
                     HStack(spacing: 16) {
                         Image(systemName: "person.circle.fill")
-                            .font(.system(size: 60))
+                            .font(.system(size: 80))
                             .foregroundColor(.accentColor)
 
                         VStack(alignment: .leading, spacing: 4) {

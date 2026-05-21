@@ -49,8 +49,8 @@ struct StudentsLibraryView: View {
                             ForEach(filteredStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
                                 HStack {
                                     Image(systemName: "person.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.gray)
+                                        .font(.system(size: 46))
+                                        .foregroundColor(.accentColor)
                                     
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text("\(student.firstName) \(student.lastName)")
