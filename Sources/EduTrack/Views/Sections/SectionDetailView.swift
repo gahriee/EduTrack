@@ -37,7 +37,7 @@ struct SectionDetailView: View {
             
             // Summary Strip
             let records = currentRecords()
-            let sectionStudents = dataStore.students.filter { section.studentIds.contains($0.id ?? "") }
+            let sectionStudents = dataStore.students.filter { currentSection.studentIds.contains($0.id ?? "") }
             
             let presentCount = records.filter { $0.status == .present }.count + (sectionStudents.count - records.count) // default present
             let absentCount = records.filter { $0.status == .absent }.count
@@ -79,7 +79,7 @@ struct SectionDetailView: View {
                             
                             let status = statusFor(studentId: student.id ?? "")
                             AttendanceStatusPicker(status: .init(get: { status }, set: { newStatus in
-                                if let sectionId = section.id, let studentId = student.id {
+                                if let sectionId = currentSection.id, let studentId = student.id {
                                     dataStore.updateRecord(sectionId: sectionId, date: selectedDate, studentId: studentId, status: newStatus)
                                 }
                             })) { _ in }
@@ -88,7 +88,7 @@ struct SectionDetailView: View {
                     .onDelete { indexSet in
                         let sortedStudents = sectionStudents.sorted(by: { $0.lastName < $1.lastName })
                         for index in indexSet {
-                            if let studentId = sortedStudents[index].id, let sectionId = section.id {
+                            if let studentId = sortedStudents[index].id, let sectionId = currentSection.id {
                                 dataStore.removeStudentFromSection(studentId: studentId, sectionId: sectionId)
                             }
                         }
@@ -96,7 +96,7 @@ struct SectionDetailView: View {
                 }
             }
         }
-        .navigationTitle(section.name)
+        .navigationTitle(currentSection.name)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -109,8 +109,11 @@ struct SectionDetailView: View {
             }
         }
         .sheet(isPresented: $showingAddStudent) {
-            AddStudentToSectionSheet(section: section)
+            AddStudentToSectionSheet(section: currentSection)
         }
+    }
+    private var currentSection: ClassSection {
+        dataStore.sections.first(where: { $0.id == section.id }) ?? section
     }
     
     private func changeDate(by days: Int) {
@@ -122,7 +125,7 @@ struct SectionDetailView: View {
     private func currentRecords() -> [AttendanceRecord] {
         let calendar = Calendar.current
         return dataStore.attendanceRecords.filter {
-            $0.sectionId == section.id &&
+            $0.sectionId == currentSection.id &&
             calendar.isDate($0.date, inSameDayAs: selectedDate)
         }
     }

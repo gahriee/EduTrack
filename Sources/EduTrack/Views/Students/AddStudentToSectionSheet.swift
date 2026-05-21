@@ -7,8 +7,12 @@ struct AddStudentToSectionSheet: View {
     let section: ClassSection
     @State private var searchText = ""
     
+    private var currentSection: ClassSection {
+        dataStore.sections.first(where: { $0.id == section.id }) ?? section
+    }
+    
     var unassignedStudents: [Student] {
-        dataStore.students.filter { !section.studentIds.contains($0.id ?? "") }
+        dataStore.students.filter { !currentSection.studentIds.contains($0.id ?? "") }
     }
     
     var filteredStudents: [Student] {
@@ -33,7 +37,7 @@ struct AddStudentToSectionSheet: View {
                 } else {
                     ForEach(filteredStudents.sorted(by: { $0.lastName < $1.lastName })) { student in
                         Button(action: {
-                            if let studentId = student.id, let sectionId = section.id {
+                            if let studentId = student.id, let sectionId = currentSection.id {
                                 dataStore.addStudentToSection(studentId: studentId, sectionId: sectionId)
                             }
                             dismiss()
